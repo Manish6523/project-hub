@@ -37,8 +37,8 @@ export const Navbar = () => {
             transition={{ duration: 1.3 }}
             className='absolute top-0 w-full z-10 text-black flex items-center justify-between sm:px-10 px-3 py-2  '>
             <div onClick={() => { router.push("/") }} className='cursor-pointer text-xl flex items-center gap-3'>
-                <Image src="/images/logo.png" className='sm:flex hidden' width={40} height={40} alt="Logo" />
-                ProjectHub
+                <Image src="/images/logo.png" width={40} height={40} alt="Logo" />
+                <span className='sm:flex hidden'>ProjectHub</span>
             </div>
             <span className='flex gap-2'>
                 {session && (
