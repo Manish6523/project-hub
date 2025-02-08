@@ -59,6 +59,8 @@ const Page = () => {
         // e.preventDefault()
         if (title.length < 1 || description.length < 1 || technology.length < 1 || sourceCode.length < 1 || liveUrl.length < 1 || mainImage === null) {
             toast.error("Please fill all the fields")
+        } else if (description.length < 100) {
+            toast.error("Description should be atleast 100 characters long")
         } else {
             try {
                 setDisable(true)
