@@ -29,7 +29,7 @@ const Theme02 = (props) => {
         >
             {/* Image Preview Modal */}
             {showPreview && (
-                <div className="fixed p-1 top-0 left-0 backdrop-blur-sm h-screen w-screen flex items-center justify-center">
+                <div className="fixed z-10 p-1 top-0 left-0 backdrop-blur-sm h-screen w-screen flex items-center justify-center">
                     <div className="relative flex items-center justify-center h-full md:w-1/2 w-auto">
                         <img src={Img} alt="Preview" className="object-contain" />
                         <span
