@@ -26,7 +26,6 @@ const ProfilePage = () => {
             try {
                 const response = await axios.post("/api/get-user-profile", { email: Email });
                 setResponse(response?.data.data);
-                console.log(response?.data);
             } catch (error) {
                 console.log(error);
             } finally {
@@ -86,6 +85,7 @@ const ProfilePage = () => {
                         </>
                     )}
                 </div>
+                <div className="mt-4 p-2 border rounded-sm cursor-pointer w-fit mx-auto" onClick={()=>router.push("/dashboard/"+response?.email)}>Dashboard</div>
             </div>
 
             {/* Projects Section */}
@@ -106,7 +106,8 @@ const ProfilePage = () => {
                                     alt={project.title}
                                     width={600}
                                     height={400}
-                                    className="rounded-lg w-full h-auto"
+                                    className="rounded-lg w-full h-auto cursor-pointer"
+                                    onClick={() => router.push("/project/" + project._id)}
                                 />
                                 <p className="text-center mt-3 font-medium">{project.title}</p>
                                 <div className="absolute z-10 items-center font-bold text-red-600 flex gap-1 hover:scale-110 transition-all top-5 right-5 cursor-pointer">

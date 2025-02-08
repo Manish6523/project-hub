@@ -2,12 +2,12 @@ import dbConnect from "@/lib/connectDB";
 import UserModel from "@/models/UserModel";
 
 export async function POST(request) {
-    dbConnect();
+    await dbConnect();
     const { email, username, gitURL, linkedInURL, instaURL } = await request.json();
     try {
         const user = await UserModel.findOneAndUpdate(
             { email },
-            { username, gitURL, linkedInURL, instaURL}, 
+            { username, gitURL, linkedInURL , instaURL },
             { new: true }
         );
         if (!user) {

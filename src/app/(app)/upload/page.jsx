@@ -12,6 +12,8 @@ const Page = () => {
     const [color, setColor] = useState("#000000"); // Border color
     const [textColor, setTextColor] = useState("#000000"); // Text color
 
+    const [disable, setDisable] = useState(false)
+
     // Individual states for images
     const [mainImage, setMainImage] = useState(null);
     const [ss01, setSs01] = useState(null);
@@ -55,14 +57,15 @@ const Page = () => {
             LiveLink: liveUrl,
         }
         // e.preventDefault()
-        if (title.length < 1 || description.length < 1 || technology.length < 1 || sourceCode.length < 1 || liveUrl.length < 1) {
+        if (title.length < 1 || description.length < 1 || technology.length < 1 || sourceCode.length < 1 || liveUrl.length < 1 || mainImage === null) {
             toast.error("Please fill all the fields")
         } else {
             try {
+                setDisable(true)
                 let response = await axios.post("/api/add-project", FormData)
                 if (response.status === 200) {
-                toast.success("Project added successfully")
-                router.push("/profile")
+                    toast.success("Project added successfully")
+                    router.push("/profile")
                 }
             } catch (error) {
                 toast.error("Something went wrong")
@@ -131,15 +134,17 @@ const Page = () => {
                     </div>
                     <div className="w-full lg:w-1/2 flex flex-col gap-3">
                         <input spellCheck="false" type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="text-2xl font-bold border-2 p-2" style={{ borderColor: color, color: textColor }} />
-                        <div className="flex gap-3">
+                        <div className="flex gap-3 w-full flex-wrap items-center">
                             <span className="border-2 border-black p-2">Set Theme</span>
-                            <span className={`border-2 border-black p-2 cursor-pointer ${theme === "Theme01" ? "bg-black text-white" : ""} `} onClick={() => setTheme("Theme01")} >Theme 1</span>
-                            <span className={`border-2 border-black p-2 cursor-pointer ${theme === "Theme02" ? "bg-black text-white" : ""} `} onClick={() => setTheme("Theme02")} >Theme 2</span>
+                            <div className="flex gap-3">
+                                <span className={`border-2 border-black p-2 cursor-pointer ${theme === "Theme01" ? "bg-black text-white" : ""} `} onClick={() => setTheme("Theme01")} >Theme 1</span>
+                                <span className={`border-2 border-black p-2 cursor-pointer ${theme === "Theme02" ? "bg-black text-white" : ""} `} onClick={() => setTheme("Theme02")} >Theme 2</span>
+                            </div>
                         </div>
                         <textarea spellCheck="false" value={description} onChange={(e) => setDescription(e.target.value)} className="h-full border-2 p-2" placeholder="Description" style={{ borderColor: color, color: textColor }} />
                         <div className="border-2 p-2 flex flex-col flex-wrap gap-3" style={{ borderColor: color, color: textColor }}>
                             <span className="font-semibold">Technology used:</span>
-                            <input spellCheck="false" type="text" value={technology} onChange={(e) => setTechnology(e.target.value)} placeholder="separate by ," className="border-2 p-2 w-fit font-semibold" style={{ borderColor: color, color: textColor }} />
+                            <input spellCheck="false" type="text" value={technology} onChange={(e) => setTechnology(e.target.value)} placeholder="separate by ," className="border-2 p-2 font-semibold w-full" style={{ borderColor: color, color: textColor }} />
                         </div>
                     </div>
                 </div>
@@ -147,7 +152,7 @@ const Page = () => {
                     <input spellCheck="false" value={sourceCode} onChange={(e) => setSourceCode(e.target.value)} placeholder="Source Code" type="text" className="border-2 w-full text-center p-2 font-semibold" style={{ borderColor: color, color: textColor }} />
                     <input spellCheck="false" value={liveUrl} onChange={(e) => setLiveUrl(e.target.value)} placeholder="Live URL" type="text" className="border-2 w-full text-center p-2 font-semibold" style={{ borderColor: color, color: textColor }} />
                 </div>
-                <button type="submit" className="save focus:ring-4 bg-green-500 w-full p-4 my-3 border-2 border-black" onClick={() => { handleSubmit() }}>Upload</button>
+                <button type="submit" disabled={disable} className={`save focus:ring-4 ${disable ? "bg-green-200" : "bg-green-500"}  w-full p-4 my-3 border-2 border-black`} onClick={() => { handleSubmit() }}>{disable ? "uploading..." : "upload"}</button>
             </div> : <h1 className="text-2xl cursor-pointer text-center transition-all hover:bg-black hover:text-white border-2 border-black px-4 py-3" onClick={() => signIn("google", { redirect: "/profile" })} >Log In first</h1>}
         </div>
     );

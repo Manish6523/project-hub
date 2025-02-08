@@ -8,6 +8,7 @@ export async function POST(request) {
 
         const { email, projectId } = await request.json();
 
+        // Validate request data
         if (!email || !projectId) {
             return Response.json({
                 success: false,
@@ -15,7 +16,18 @@ export async function POST(request) {
             }, { status: 400 });
         }
 
-        const user = await UserModel.findOne({ email: email });
+        // Validate projectId format
+        if (!mongoose.Types.ObjectId.isValid(projectId)) {
+            return Response.json({
+                success: false,
+                message: "Invalid project ID"
+            }, { status: 400 });
+        }
+
+        const projectObjectId = new mongoose.Types.ObjectId(projectId);
+
+        // Find the user who is liking/unliking
+        const user = await UserModel.findOne({ email });
 
         if (!user) {
             return Response.json({
@@ -24,18 +36,30 @@ export async function POST(request) {
             }, { status: 404 });
         }
 
-        const projectObjectId = new mongoose.Types.ObjectId(projectId);
+        // Find the project owner (any user who has this project in their projects array)
+        const projectOwner = await UserModel.findOne({ "projects._id": projectObjectId });
 
-        // Find the project inside the user's projects
-        let project = user.projects.find(proj => proj._id.toString() === projectId);
-
-        if (!project) {
+        if (!projectOwner) {
             return Response.json({
                 success: false,
                 message: "Project not found"
             }, { status: 404 });
         }
 
+        // Find the correct project inside the owner's projects array
+        let projectIndex = projectOwner.projects.findIndex(proj => proj._id.toString() === projectId);
+
+        if (projectIndex === -1) {
+            return Response.json({
+                success: false,
+                message: "Project not found"
+            }, { status: 404 });
+        }
+
+        // Reference the project object directly
+        let project = projectOwner.projects[projectIndex];
+
+        // Check if the user already liked the project
         const hasLiked = user.likedProjects.includes(projectObjectId);
 
         if (hasLiked) {
@@ -48,7 +72,15 @@ export async function POST(request) {
             project.likes += 1;
         }
 
+        // Update the project inside the array
+        projectOwner.projects[projectIndex] = project;
+
+        // Ensure MongoDB detects changes in nested array
+        projectOwner.markModified("projects");
+
+        // Save both user and projectOwner
         await user.save();
+        await projectOwner.save();
 
         return Response.json({
             message: hasLiked ? "Project unliked" : "Project liked",
@@ -57,7 +89,10 @@ export async function POST(request) {
         }, { status: 200 });
 
     } catch (error) {
-        console.error(error);
-        return Response.json({ message: "Internal server error" }, { status: 500 });
+        console.error("Error in like/unlike API:", error);
+        return Response.json({ 
+            message: "Internal server error", 
+            error: error.message 
+        }, { status: 500 });
     }
 }

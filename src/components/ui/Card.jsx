@@ -27,17 +27,20 @@ const Card = ({ image, date, title, description, githubUrl, visitUrl, pID, fetch
     }, [session?.user?.likedProjects, pID]);
 
     const handleLike = async (ID, email) => {
-        try {
-            const response = await axios.post(`/api/like-projects`, { email, projectId: ID });
-            if (response.status === 200) {
-                setLiked(response.data.liked);
-                setLikeCount(response.data.likes); // Update likes count in UI
-                toast.success(response.data.message);
+        if (session) {
+
+            try {
+                const response = await axios.post(`/api/like-projects`, { email, projectId: ID });
+                if (response.status === 200) {
+                    setLiked(response.data.liked);
+                    setLikeCount(response.data.likes); // Update likes count in UI
+                    toast.success(response.data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error("Failed to like project");
             }
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to like project");
-        }
+        } else {toast.error("Please login to like a project") }
     };
 
 

@@ -35,7 +35,7 @@ export default function ProfilePage() {
 
     const updateProfile = async () => {
         try {
-            await axios.post(`/api/update-profile`, { email, username, gitURL, linkedinUrl, instagramUrl });
+            await axios.post(`/api/update-profile`, { email, username, gitURL:gitURL, linkedInURL: linkedinUrl, instaURL: instagramUrl });
             toast.success("Profile updated successfully!");
             await update();
         } catch (error) {
